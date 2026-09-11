@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     "get youtube thumbnail 1080p"
   ],
   verification: {
-    google: "xJW0nI1OISSB4KciJ_ZWpFIVGWLHWiIEruwmF-bKeMI",
+    google: "4HbuEZjfCqFrNLRTRJl3bdT98JennFGxRvAjMvhZWsY",
   },
 };
 
