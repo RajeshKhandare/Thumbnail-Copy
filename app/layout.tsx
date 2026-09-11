@@ -12,7 +12,10 @@ export const metadata: Metadata = {
     "copy youtube thumbnail",
     "download youtube thumbnail hd",
     "get youtube thumbnail 1080p"
-  ]
+  ],
+  verification: {
+    google: "xJW0nI1OISSB4KciJ_ZWpFIVGWLHWiIEruwmF-bKeMI",
+  },
 };
 
 export default function RootLayout({
