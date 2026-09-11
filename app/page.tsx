@@ -15,7 +15,11 @@ import {
   FileText,
   Mail,
   Info,
-  X
+  X,
+  CheckCircle2,
+  Layers,
+  Search,
+  Monitor
 } from "lucide-react";
 
 interface ThumbnailQuality {
@@ -52,7 +56,6 @@ export default function Home() {
     setVideoId(null);
   };
 
-  // Canvas drawing bypasses CORS restrictions and downloads the real JPG directly to disk
   const triggerDownload = (imgUrl: string, filename: string, index: number) => {
     setDownloadingIndex(index);
 
@@ -105,11 +108,460 @@ export default function Home() {
     {
       label: "Maximum HD (1080p / 4K)",
       res: "1920 × 1080",
-      tag: "Best for high-res banners & artwork",
+      tag: "Best for high-res banners, wallpaper & artwork",
       badge: "Ultra HD",
       url: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
     },
     {
+      label: "Standard Definition (HD)",
+      res: "1280 × 720",
+      tag: "YouTube standard recommended resolution",
+      badge: "HD",
+      url: `https://img.youtube.com/vi/${videoId}/sddefault.jpg`
+    },
+    {
+      label: "High Quality (HQ)",
+      res: "480 × 360",
+      tag: "Medium resolution compressed thumbnail",
+      url: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+    },
+    {
+      label: "Medium Quality (MQ)",
+      res: "320 × 180",
+      tag: "Compact mobile layout size",
+      url: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`
+    }
+  ] : [];
+
+  // Google Rich Snippet JSON-LD Schema for direct FAQ appearance on Google SERP
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I download a YouTube thumbnail in Full HD (1080p)?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Copy the video URL from YouTube or YouTube Shorts, paste it into the search box on Thumbnail Copy, and click Extract. If the creator uploaded a high-resolution video, the Maximum HD (1920x1080) download button will appear instantly."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I download thumbnails from YouTube Shorts?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Thumbnail Copy seamlessly parses YouTube Shorts links (youtube.com/shorts/...) and retrieves the source cover image at full fidelity."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is using someone else's YouTube thumbnail legal?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Downloading thumbnails for personal reference, fair-use commentary, critique, education, or archival purposes is permitted. Re-uploading another creator's thumbnail as your own for commercial video publishing without their explicit permission violates copyright guidelines."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why is the Maximum HD option showing a gray placeholder on some videos?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "YouTube only generates maxresdefault.jpg (1080p) if the original uploaded video was rendered in 720p or higher. For older or standard-definition uploads, the standard HD (1280x720) or HQ (480x360) is the highest available source."
+        }
+      }
+    ]
+  };
+
+  return (
+    <div className="min-h-screen bg-[#07090e] text-zinc-100 flex flex-col justify-between selection:bg-rose-500/30">
+      {/* Search Engine Structured Data Injection */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
+      {/* Top Header */}
+      <header className="w-full border-b border-zinc-800/40 bg-[#0a0d14]/70 backdrop-blur-md sticky top-0 z-40">
+        <div className="max-w-4xl mx-auto px-5 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#ef233c] flex items-center justify-center shadow-lg shadow-rose-600/30">
+              <Play className="w-4 h-4 fill-white text-white translate-x-[1px]" />
+            </div>
+            <span className="font-bold tracking-tight text-lg text-white">
+              Thumbnail <span className="text-[#ef233c]">Copy</span>
+            </span>
+          </div>
+
+          <span className="text-[11px] font-medium px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/90 text-zinc-400">
+            100% Free • No Watermarks
+          </span>
+        </div>
+      </header>
+
+      {/* Main Container */}
+      <main className="max-w-xl mx-auto px-5 pt-12 pb-20 w-full flex flex-col items-center">
+        {/* Pill Tag */}
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-rose-500/20 bg-rose-500/10 text-rose-400 text-xs font-medium mb-6">
+          <Sparkles className="w-3.5 h-3.5 text-rose-400" /> Direct 4K & Full HD Downloader
+        </div>
+
+        {/* Hero Title */}
+        <div className="text-center mb-5">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-[1.15]">
+            Download High-Res
+            <span className="block mt-1 bg-gradient-to-r from-rose-400 via-pink-400 to-amber-200 bg-clip-text text-transparent">
+              YouTube
+            </span>
+            <span className="block bg-gradient-to-r from-rose-400 via-pink-400 to-amber-200 bg-clip-text text-transparent">
+              Thumbnails
+            </span>
+          </h1>
+        </div>
+
+        {/* Subtitle */}
+        <p className="text-center text-zinc-400 text-xs sm:text-sm max-w-sm leading-relaxed mb-8">
+          Extract crisp full-resolution cover art from any YouTube video or Short in one click. Completely uncompressed.
+        </p>
+
+        {/* Input Bar */}
+        <div className="w-full mb-8">
+          <div className="relative flex items-center bg-[#10141f] border border-zinc-800/90 rounded-2xl p-1.5 shadow-xl shadow-black/40 focus-within:border-zinc-700 transition">
+            <input
+              type="text"
+              value={inputUrl}
+              onChange={(e) => {
+                setInputUrl(e.target.value);
+                extractVideoDetails(e.target.value);
+              }}
+              placeholder="Paste YouTube link here (e.g. https://...)"
+              className="w-full bg-transparent px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => extractVideoDetails(inputUrl)}
+              className="px-5 py-2.5 text-xs sm:text-sm font-semibold text-white bg-[#e62939] hover:bg-[#d02433] rounded-xl transition shadow-md whitespace-nowrap active:scale-95"
+            >
+              Extract
+            </button>
+          </div>
+
+          {error && (
+            <div className="flex items-center gap-2 mt-3 text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3.5 py-2 rounded-xl">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Results or Empty State */}
+        {thumbnails.length > 0 ? (
+          <div className="w-full space-y-5">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+              <span className="text-xs uppercase tracking-wider text-zinc-400 font-semibold">
+                Available Resolutions ({thumbnails.length})
+              </span>
+              <span className="text-[11px] text-zinc-500 font-mono">
+                ID: {videoId}
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {thumbnails.map((item, idx) => (
+                <div 
+                  key={idx}
+                  className="bg-[#10141f] border border-zinc-800/90 rounded-2xl overflow-hidden shadow-lg"
+                >
+                  <div className="relative aspect-video w-full bg-zinc-950">
+                    <img 
+                      src={item.url} 
+                      alt={item.label}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    {item.badge && (
+                      <span className="absolute top-2.5 left-2.5 px-2 py-0.5 text-[10px] font-bold bg-[#e62939] text-white rounded">
+                        {item.badge}
+                      </span>
+                    )}
+                    <span className="absolute bottom-2.5 right-2.5 px-2 py-0.5 text-[11px] font-mono bg-black/80 backdrop-blur-md text-zinc-300 rounded">
+                      {item.res}
+                    </span>
+                  </div>
+
+                  <div className="p-3.5 flex flex-col gap-3">
+                    <div>
+                      <h3 className="font-semibold text-zinc-100 text-xs sm:text-sm">
+                        {item.label}
+                      </h3>
+                      <p className="text-[11px] text-zinc-500">
+                        {item.tag}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => triggerDownload(item.url, `thumbnail-${videoId}-${item.res.replace(/\s/g, "")}.jpg`, idx)}
+                        disabled={downloadingIndex === idx}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs transition active:scale-95 disabled:opacity-50"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        {downloadingIndex === idx ? "Processing..." : "Download"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard(item.url, idx)}
+                        className="p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition"
+                        title="Copy direct link"
+                      >
+                        {copiedIndex === idx ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      </button>
+
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition"
+                        title="Open in new tab"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="w-full border border-dashed border-zinc-800/80 bg-[#10141f]/70 rounded-3xl p-10 flex flex-col items-center justify-center text-center">
+            <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4 text-zinc-400">
+              <ImageIcon className="w-5 h-5 text-zinc-400 stroke-[1.5]" />
+            </div>
+            <h3 className="text-zinc-200 font-semibold text-xs sm:text-sm mb-1">
+              No video link loaded yet
+            </h3>
+            <p className="text-zinc-500 text-[11px] leading-relaxed max-w-xs">
+              Paste any public YouTube standard video, Shorts URL, or stream link above to preview all available resolutions.
+            </p>
+          </div>
+        )}
+
+        {/* ------------------------------------------------------------- */}
+        {/* COMPREHENSIVE SEO CONTENT & AUTHORITY DATA FOR GOOGLE RANKING */}
+        {/* ------------------------------------------------------------- */}
+        <section className="mt-16 pt-12 border-t border-zinc-800/60 text-zinc-400 text-xs leading-relaxed space-y-12 w-full">
+          
+          {/* Article 1: How to use & workflow */}
+          <div>
+            <div className="flex items-center gap-2 text-zinc-200 font-semibold text-sm mb-3">
+              <Layers className="w-4 h-4 text-[#ef233c]" />
+              <h2>How to Extract and Save YouTube Thumbnails Online</h2>
+            </div>
+            <p className="text-zinc-400 text-[11px] leading-relaxed mb-4">
+              Finding the original source file of a YouTube thumbnail can be tedious. Browsers do not provide a native one-click extraction link for cover artwork embedded in video players. <strong>Thumbnail Copy</strong> resolves this by programmatically parsing the unique 11-character video identification key from your URL and retrieving the uncompressed graphics directly from YouTube&apos;s global Content Delivery Network (CDN) cache.
+            </p>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+              <div className="p-3 bg-[#10141f] border border-zinc-800/80 rounded-xl">
+                <div className="font-semibold text-white text-[11px] mb-1 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 1. Copy Video URL
+                </div>
+                <p className="text-[10px] text-zinc-500">Copy any standard URL, Shorts link, or youtu.be shortlink from your address bar or share tray.</p>
+              </div>
+              <div className="p-3 bg-[#10141f] border border-zinc-800/80 rounded-xl">
+                <div className="font-semibold text-white text-[11px] mb-1 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 2. Instant Extraction
+                </div>
+                <p className="text-[10px] text-zinc-500">Paste into our extractor. Client-side canvas logic fetches 1080p, 720p, 480p, and 320p versions in milliseconds.</p>
+              </div>
+              <div className="p-3 bg-[#10141f] border border-zinc-800/80 rounded-xl">
+                <div className="font-semibold text-white text-[11px] mb-1 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 3. One-Click Download
+                </div>
+                <p className="text-[10px] text-zinc-500">Hit Download to trigger a zero-compression direct disk download without watermarks or account signups.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Technical Data Table */}
+          <div>
+            <div className="flex items-center gap-2 text-zinc-200 font-semibold text-sm mb-3">
+              <Monitor className="w-4 h-4 text-[#ef233c]" />
+              <h2>YouTube Thumbnail Dimensions & Resolution Chart</h2>
+            </div>
+            <p className="text-zinc-400 text-[11px] mb-3">
+              YouTube automatically scales and stores every video thumbnail in distinct quality tiers across its image delivery network:
+            </p>
+            <div className="overflow-x-auto border border-zinc-800 rounded-xl">
+              <table className="w-full text-left text-[11px] border-collapse">
+                <thead className="bg-[#10141f] text-zinc-300 border-b border-zinc-800">
+                  <tr>
+                    <th className="p-2.5 font-medium">Quality Tier</th>
+                    <th className="p-2.5 font-medium">Resolution</th>
+                    <th className="p-2.5 font-medium">Aspect Ratio</th>
+                    <th className="p-2.5 font-medium">YouTube File Identifier</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800/60 text-zinc-400">
+                  <tr>
+                    <td className="p-2.5 font-medium text-white">Full HD (Maximum)</td>
+                    <td className="p-2.5 font-mono">1920 × 1080</td>
+                    <td className="p-2.5">16:9</td>
+                    <td className="p-2.5 font-mono text-[#ef233c]">maxresdefault.jpg</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2.5 font-medium text-white">Standard HD</td>
+                    <td className="p-2.5 font-mono">1280 × 720</td>
+                    <td className="p-2.5">16:9</td>
+                    <td className="p-2.5 font-mono text-[#ef233c]">sddefault.jpg</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2.5 font-medium text-white">High Quality (HQ)</td>
+                    <td className="p-2.5 font-mono">480 × 360</td>
+                    <td className="p-2.5">4:3</td>
+                    <td className="p-2.5 font-mono text-[#ef233c]">hqdefault.jpg</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2.5 font-medium text-white">Medium Quality (MQ)</td>
+                    <td className="p-2.5 font-mono">320 × 180</td>
+                    <td className="p-2.5">16:9</td>
+                    <td className="p-2.5 font-mono text-[#ef233c]">mqdefault.jpg</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Article 2: Use Cases & Legality */}
+          <div>
+            <div className="flex items-center gap-2 text-zinc-200 font-semibold text-sm mb-3">
+              <Search className="w-4 h-4 text-[#ef233c]" />
+              <h2>Legitimate Applications for Thumbnail Retrieval</h2>
+            </div>
+            <p className="text-zinc-400 text-[11px] leading-relaxed mb-3">
+              Content producers, digital marketing agencies, and researchers regularly need rapid access to video imagery. Common authorized applications include:
+            </p>
+            <ul className="list-disc list-inside space-y-1.5 text-zinc-400 text-[11px] ml-1">
+              <li><strong>Design Inspiration & Competitor Audits:</strong> Analyzing top-performing thumbnails in your niche to study typography hierarchy, color psychology, and composition.</li>
+              <li><strong>Presentation Slides & Educational Seminars:</strong> Embedding verified YouTube preview stills into keynote presentations, lectures, and academic citations.</li>
+              <li><strong>Editorial Commentary & Critique:</strong> Utilizing thumbnail images under Fair Use doctrine for news reports, reviews, blog commentary, and media analysis.</li>
+              <li><strong>Archive & Asset Recovery:</strong> Re-downloading your own original thumbnail assets if source graphic files were lost during storage migrations.</li>
+            </ul>
+          </div>
+
+          {/* Extended FAQ Accordion */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-zinc-200 flex items-center gap-1.5 mb-2">
+              <HelpCircle className="w-4 h-4 text-[#ef233c]" /> Frequently Asked Questions (FAQ)
+            </h3>
+            
+            <div className="p-3.5 rounded-xl bg-[#10141f] border border-zinc-800 space-y-1">
+              <h4 className="font-semibold text-zinc-200 text-[11px]">How do I download a YouTube thumbnail in Full HD (1080p)?</h4>
+              <p className="text-[10px] text-zinc-400 leading-relaxed">
+                Simply paste the URL into the input field above and select &quot;Extract&quot;. Thumbnail Copy will display the 1920×1080 (maxresdefault) resolution if the video creator uploaded high-resolution assets. Click Download to save directly to your phone or desktop.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-[#10141f] border border-zinc-800 space-y-1">
+              <h4 className="font-semibold text-zinc-200 text-[11px]">Can I grab thumbnails from YouTube Shorts?</h4>
+              <p className="text-[10px] text-zinc-400 leading-relaxed">
+                Yes. Our intelligent regex parser automatically identifies YouTube Shorts links (<code className="text-zinc-300">youtube.com/shorts/...</code>) and queries the underlying high-resolution preview graphics effortlessly.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-[#10141f] border border-zinc-800 space-y-1">
+              <h4 className="font-semibold text-zinc-200 text-[11px]">Why is Maximum HD missing for some older videos?</h4>
+              <p className="text-[10px] text-zinc-400 leading-relaxed">
+                YouTube only compiles 1080p (maxresdefault) cover images if the uploaded video has a resolution of at least 720p. For standard definition uploads or videos published prior to 2012, 1280×720 or 480×360 will represent the highest existing master copy.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-[#10141f] border border-zinc-800 space-y-1">
+              <h4 className="font-semibold text-zinc-200 text-[11px]">Does Thumbnail Copy store my downloads or history?</h4>
+              <p className="text-[10px] text-zinc-400 leading-relaxed">
+                No. All image extraction and canvas rendering operations are executed directly within your client browser. We do not maintain server-side logs, image caches, or identity profiles.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-zinc-800/60 bg-[#07090e] py-6 px-5 text-[11px] text-zinc-500">
+        <div className="max-w-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          <p>© {new Date().getFullYear()} Thumbnail Copy. All rights reserved.</p>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setActiveModal("privacy")} className="hover:text-zinc-300">Privacy</button>
+            <button onClick={() => setActiveModal("terms")} className="hover:text-zinc-300">Terms</button>
+            <button onClick={() => setActiveModal("about")} className="hover:text-zinc-300">About</button>
+            <button onClick={() => setActiveModal("contact")} className="hover:text-zinc-300">Contact</button>
+          </div>
+        </div>
+      </footer>
+
+      {/* Policy Modals */}
+      {activeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-md bg-[#10141f] border border-zinc-800 rounded-2xl p-5 text-xs text-zinc-300">
+            <button 
+              onClick={() => setActiveModal(null)} 
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {activeModal === "privacy" && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 font-bold text-white text-sm">
+                  <ShieldCheck className="w-4 h-4 text-rose-500" /> Privacy Policy
+                </div>
+                <p className="text-zinc-400 leading-relaxed text-[11px]">
+                  Thumbnail Copy does not store personal credentials or session data. All operations happen directly inside the client browser.
+                </p>
+              </div>
+            )}
+
+            {activeModal === "terms" && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 font-bold text-white text-sm">
+                  <FileText className="w-4 h-4 text-rose-500" /> Terms of Service
+                </div>
+                <p className="text-zinc-400 leading-relaxed text-[11px]">
+                  Intended for design reference, education, and archiving under fair-use principles.
+                </p>
+              </div>
+            )}
+
+            {activeModal === "about" && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 font-bold text-white text-sm">
+                  <Info className="w-4 h-4 text-rose-500" /> About Thumbnail Copy
+                </div>
+                <p className="text-zinc-400 leading-relaxed text-[11px]">
+                  Thumbnail Copy is a minimalist web tool built for creators to extract uncompressed YouTube video graphics without ads or bloatware.
+                </p>
+              </div>
+            )}
+
+            {activeModal === "contact" && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 font-bold text-white text-sm">
+                  <Mail className="w-4 h-4 text-rose-500" /> Contact
+                </div>
+                <p className="text-zinc-400 text-[11px]">Send inquiries or feedback to:</p>
+                <div className="p-2.5 bg-black/50 border border-zinc-800 rounded-lg text-[#ef233c] font-mono select-all text-[11px]">
+                  contact@thumbnailcopy.app
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
       label: "Standard Definition (HD)",
       res: "1280 × 720",
       tag: "YouTube standard recommended resolution",
